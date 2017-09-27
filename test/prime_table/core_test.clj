@@ -52,23 +52,17 @@
 
 (defn check-prime-table
   [n]
-  (let [table (p-t/build-prime-table n)
+  (let [{:keys [::p-t/header ::p-t/body]
+         :as table} (p-t/build-prime-table n)
         ns (take n (p-t/primes))]
-    (is (= (inc n) (count table)))
-    (is (= (concat [nil] ns)
-           (first table)))
-    ;; Now it gets interesting.
-    ;; Normally, I'm against test code that's
-    ;; harder to understand than the code I'm
-    ;; testing.
-    ;; In this case...that code's
-    (doseq [row (rest table)]
-      (let [i (first row)
-            cols (rest row)]
-        (dorun (map-indexed (fn [n multiple]
-                              (let [multiplier (nth ns n)]
-                                (is (= (* multiplier i) multiple))))
-                            cols))))))
+    (is (= n (count body)))
+    (is (= (concat [:p] ns) header))
+    (doseq [row body]
+      (let [i (:p row)]
+        (doseq [k (keys row)]
+          (when (not= k :p)
+            (let [cell (get row k)]
+              (is (= (* i k) cell)))))))))
 
 (deftest check-prime-tables
   (check-prime-table 4)

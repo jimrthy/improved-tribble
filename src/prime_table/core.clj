@@ -1,5 +1,6 @@
 (ns prime-table.core
   (:require [clojure.edn :as edn]
+            [clojure.pprint :refer (print-table)]
             [clojure.spec.alpha :as s]))
 
 (declare prime?)
@@ -76,23 +77,23 @@
   "Build a matrix of the products of n primes"
   [n]
   (let [ms (take n (primes))
-        ;; Use the nil as a placeholder
-        row-1 (concat [nil] ms)]
-    (concat [row-1]   ; top header
-            (map (fn [row-mult]
-                   (concat [row-mult]  ; left column
-                           ;; And then the cells in the row
-                           (map (partial * row-mult) ms)))
-                 ms))))
+        header (concat [:p] ms)]
+    {::header header
+     ::body
+     (map (fn [row-mult]
+            (let [multiplier (partial * row-mult)]
+              (reduce (fn [acc col-mult]
+                        (assoc acc col-mult (multiplier col-mult)))
+                      {:p row-mult}
+                      ms)))
+          ms)}))
+(comment
+  (build-prime-table 3))
 
 (defn display
-  [table]
-  (doseq [row table]
-    ;; Q: Is it worth trying to automatically generate
-    ;; this as ASCII art and do fancy things with the
-    ;; formatting to make it actually lay out in a
-    ;; nice grid?
-    (println row)))
+  [{:keys [::header ::body]
+    :as table}]
+  (print-table header body))
 
 (defn implementation
   "Main entry point"
@@ -105,7 +106,8 @@
   ;; automatically. Leaving this here as an
   ;; easy way to do a visual scan.
   (implementation 4)
-  (implementation 10))
+  (implementation 10)
+  (implementation 20))
 
 (defn -main
   "Really just for collecting command-line arguments"

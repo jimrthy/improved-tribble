@@ -13,7 +13,7 @@
         :ret ::prime)
 (defn next-prime
   "Returns the next prime greater than previous, using existing to test"
-  [previous existing]
+  [[previous existing]]
   (println "Looking for the next prime after" previous)
   (if previous
     (if existing
@@ -28,14 +28,25 @@
                   (when (and (odd? x)
                              (every? #(not= 0 (rem x %))
                                      possible-factors))
-                    (reduced x))))
+                    (reduced [x (conj existing previous)]))))
               (range previous ##Inf))
       (do
         (assert (= 2 previous))
-        3))
-    2))
+        [3 [2]]))
+    [2 nil]))
+
+(defn primes*
+  []
+  (comment
+    (lazy-seq (cons 2
+                    (iterate next-prime [2 nil]))))
+  (iterate next-prime [2 nil]))
 
 (defn primes
+  []
+  (map first (primes*)))
+
+(defn primes-old
   "Infinite seq of prime numbers"
   ([]
    (primes nil nil))
@@ -50,6 +61,7 @@
 (comment
   (first (primes))
   (take 3 (primes))
+  (take 4 (primes))
   )
 
 (s/fdef prime?
@@ -58,10 +70,13 @@
 (defn prime?
   "Returns true if n is prime [compared against ms]"
   ([n]
-   ;; The fact that we have a circular dependency
-   ;; between this and primes is disturbing.
-   (let [sqrt (Math/sqrt n)
-         ms (take-while #(< sqrt %) (primes))]))
+   (when (< 1 n)
+     ;; The fact that we have a circular dependency
+     ;; between this and primes is disturbing.
+     (let [sqrt (Math/sqrt n)
+           ms (take-while #(<= % sqrt) (primes))]
+       (println "Is" n "prime? Compared against" ms "up to" sqrt)
+       (prime? n ms))))
   ([n ms]
    (every? #(not= 0 (rem n %)) ms)))
 

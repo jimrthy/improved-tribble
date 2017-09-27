@@ -14,15 +14,11 @@
 (defn next-prime
   "Returns the next prime greater than previous, using existing to test"
   [[previous existing]]
-  (println "Looking for the next prime after" previous)
   (if previous
     (if existing
       (reduce (fn [_ x]
-                (println (str "Does " x " satisfy? (vs "
-                              existing ")"))
                 (let [sqrt (Math/sqrt x)
                       possible-factors (filter #(<= % sqrt) existing)]
-                  (println "Comparing against" possible-factors)
                   ;; Filtering out even numbers is cheap.
                   ;; TODO: Verify that it was worth it.
                   (when (and (odd? x)
@@ -36,33 +32,14 @@
     [2 nil]))
 
 (defn primes*
+  "This calculates each prime with the state needed to calculate the next"
   []
-  (comment
-    (lazy-seq (cons 2
-                    (iterate next-prime [2 nil]))))
   (iterate next-prime [2 nil]))
 
 (defn primes
+  "Return a lazy infinite sequence of prime numbers"
   []
   (map first (primes*)))
-
-(defn primes-old
-  "Infinite seq of prime numbers"
-  ([]
-   (primes nil nil))
-  ([previous existing]
-   (let [current (next-prime previous existing)]
-     (lazy-seq (cons (conj (list previous) existing)
-                     (primes current (if previous
-                                       (if existing
-                                         (cons previous existing)
-                                         [previous])
-                                       nil)))))))
-(comment
-  (first (primes))
-  (take 3 (primes))
-  (take 4 (primes))
-  )
 
 (s/fdef prime?
         :args (s/cat :n nat-int?)
@@ -75,7 +52,6 @@
      ;; between this and primes is disturbing.
      (let [sqrt (Math/sqrt n)
            ms (take-while #(<= % sqrt) (primes))]
-       (println "Is" n "prime? Compared against" ms "up to" sqrt)
        (prime? n ms))))
   ([n ms]
    (every? #(not= 0 (rem n %)) ms)))
@@ -91,7 +67,7 @@
 (defn pick-primes
   "Returns a seq of the first n primes"
   [n]
-  (throw (RuntimeException. "Write this")))
+  (take n (primes)))
 
 (defn build-prime-table
   "Build a matrix of the products of n primes"

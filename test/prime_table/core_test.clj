@@ -45,6 +45,6 @@
   (let [problem-numbers [9 49 18]]
     (is (every? (complement p-t/prime?) problem-numbers))))
 
-(deftest check-prime-calculation
-  (let [interesting (take 100 (p-t/primes))]
+(deftest check-prime-calculation-time
+  (let [interesting (take 10000 (p-t/primes))]
     (is (not (time (dorun interesting))))))

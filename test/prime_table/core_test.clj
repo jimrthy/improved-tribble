@@ -56,11 +56,11 @@
          :as table} (p-t/build-prime-table n)
         ns (take n (p-t/primes))]
     (is (= n (count body)))
-    (is (= (concat [:p] ns) header))
+    (is (= (concat [:P] ns) header))
     (doseq [row body]
-      (let [i (:p row)]
+      (let [i (:P row)]
         (doseq [k (keys row)]
-          (when (not= k :p)
+          (when (not= k :P)
             (let [cell (get row k)]
               (is (= (* i k) cell)))))))))
 

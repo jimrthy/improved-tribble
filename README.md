@@ -1,3 +1,10 @@
+# Running
+
+    boot run
+
+or
+
+    boot run -n ${size of grid}
 
 # Requirements
 

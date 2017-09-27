@@ -42,8 +42,9 @@
 
 (deftask run
   "Run the project."
-  [f file FILENAME #{str} "the arguments for the application."]
+  [n grid-size GRID int "Size of grid"]
   (require '[prime-table.core :as p-t])
-  (apply (resolve 'p-t/-main) file))
+  (let [main (resolve 'p-t/-main)]
+    (main grid-size)))
 
 (require '[adzerk.boot-test :refer [test]])

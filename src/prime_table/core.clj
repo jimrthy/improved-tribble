@@ -77,14 +77,14 @@
   "Build a matrix of the products of n primes"
   [n]
   (let [ms (take n (primes))
-        header (concat [:p] ms)]
+        header (concat [:P] ms)]
     {::header header
      ::body
      (map (fn [row-mult]
             (let [multiplier (partial * row-mult)]
               (reduce (fn [acc col-mult]
                         (assoc acc col-mult (multiplier col-mult)))
-                      {:p row-mult}
+                      {:P row-mult}
                       ms)))
           ms)}))
 (comment
@@ -95,24 +95,16 @@
     :as table}]
   (print-table header body))
 
-(defn implementation
+(defn -main
   "Main entry point"
-  ;; Distinct from -main for the sake of REPL testing
   [n]
   (let [table (build-prime-table n)]
     (display table)))
+
 (comment
   ;; There isn't a great way to test this part
   ;; automatically. Leaving this here as an
   ;; easy way to do a visual scan.
-  (implementation 4)
-  (implementation 10)
-  (implementation 20))
-
-(defn -main
-  "Really just for collecting command-line arguments"
-  [& args]
-  (let [n (if-let [n (edn/read-string (first args))]
-            n
-            10)]
-    (implementation n)))
+  (-main 4)
+  (-main 10)
+  (-main 20))

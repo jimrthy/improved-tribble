@@ -78,17 +78,23 @@
   [n]
   (let [ms (take n (primes))
         header (concat [:P] ms)]
+    ;; Output in a format that's easy to feed to print-table
     {::header header
      ::body
+     ;; Build a seq of rows
      (map (fn [row-mult]
+            ;; Each column in the row gets multiplied by this
             (let [multiplier (partial * row-mult)]
+              ;; Columns in this row are represented by a
+              ;; hashmap. The keys are the prime numbers
+              ;; that match header.
               (reduce (fn [acc col-mult]
+                        ;; Each cell is the product of the column
+                        ;; and row multipliers
                         (assoc acc col-mult (multiplier col-mult)))
                       {:P row-mult}
                       ms)))
           ms)}))
-(comment
-  (build-prime-table 3))
 
 (defn display
   [{:keys [::header ::body]

@@ -46,5 +46,32 @@
     (is (every? (complement p-t/prime?) problem-numbers))))
 
 (deftest check-prime-calculation-time
-  (let [interesting (take 10000 (p-t/primes))]
+  ;;; Really just checking iteration times
+  (let [interesting (take 5000 (p-t/primes))]
     (is (not (time (dorun interesting))))))
+
+(defn check-prime-table
+  [n]
+  (let [table (p-t/build-prime-table n)
+        ns (take n (p-t/primes))]
+    (is (= (inc n) (count table)))
+    (is (= (concat [nil] ns)
+           (first table)))
+    ;; Now it gets interesting.
+    ;; Normally, I'm against test code that's
+    ;; harder to understand than the code I'm
+    ;; testing.
+    ;; In this case...that code's
+    (doseq [row (rest table)]
+      (let [i (first row)
+            cols (rest row)]
+        (dorun (map-indexed (fn [n multiple]
+                              (let [multiplier (nth ns n)]
+                                (is (= (* multiplier i) multiple))))
+                            cols))))))
+
+(deftest check-prime-tables
+  (check-prime-table 4)
+  (check-prime-table 6)
+  (check-prime-table 10)
+  (time (check-prime-table 100)))

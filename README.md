@@ -6,6 +6,20 @@ or
 
     boot run -n ${size of grid}
 
+Yes, it should play more nicely when packaged into a .jar.
+
+# Implementation Notes
+
+Using a lazy sequence probably wasn't the wisest approach.
+
+Especially for a data set this small.
+
+I was very tempted to see how this implementation compared
+with one built around transducers.
+
+But this approach *does* seem elegant. And efficient enough
+(for some value of "enough").
+
 # Requirements
 
 Write a program that prints out a multiplication table of the first 10 prime number.
